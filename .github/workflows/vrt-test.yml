@@ -1,0 +1,53 @@
+name: VRT Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-vrt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with Selenium
+        run: |
+          python vrt_selenium_test.py
+
+      - name: VRT compare
+        run: |
+          vrt approve
+
+      - name: Upload VRT results
+        uses: actions/upload-artifact@v3
+        with:
+          name: vrt-actual
+          path: vrt-actual
+
+      - name: Upload expected bitmaps
+        uses: actions/upload-artifact@v3
+        with:
+          name: vrt-expected
+          path: vrt-expected
+
+      - name: Upload VRT differences
+        uses: actions/upload-artifact@v3
+        with:
+          name: vrt-difference
+          path: vrt-difference
