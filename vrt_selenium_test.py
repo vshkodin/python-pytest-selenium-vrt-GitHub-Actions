@@ -1,6 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 import os
 
 # Create directories for VRT
@@ -9,8 +7,8 @@ for directory in directories:
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-# Initialize Chrome WebDriver
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+# Initialize Chrome WebDriver (Chrome should be installed in the environment)
+driver = webdriver.Chrome()
 
 # Open the website
 driver.get("https://vshkodin.com/")
@@ -24,4 +22,3 @@ driver.save_screenshot("vrt-actual/vshkodin_screenshot.png")
 # Close the browser
 driver.quit()
 
-print("Screenshot saved in vrt-actual folder")
