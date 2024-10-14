@@ -1,46 +1,31 @@
-name: VRT Test
+name: Run tests
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+
+
 
 jobs:
-  run-vrt:
+  test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
-
-      - name: Install Chrome browser
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-          echo "CHROME_BIN=$(which google-chrome)" >> $GITHUB_ENV
-
-      - name: Install chromedriver
-        run: |
-          sudo apt-get install -y chromium-chromedriver
-          export PATH=$PATH:/usr/lib/chromium-browser/
-
-      - name: Install Python dependencies
+          python-version: '3.10.11'
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install selenium vrt-python
-
-      - name: Run VRT test with Selenium
-        run: |
-          python vrt_selenium_test.py
-
+          pip install -r requirements.txt
+      - name: install playwright browsers
+        run: npx playwright install --with-deps
+      - name: Ensure browsers are installed
+        run: python -m playwright install
+      - name: Run tests
+        run: python vrt_test.py
       - name: Upload VRT results
         uses: actions/upload-artifact@v3
         with:
